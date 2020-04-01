@@ -16,7 +16,7 @@ export default function () {
 
   Router.beforeEach((to, from, next) => {
     // Update app title on page change
-    document.title = to.meta.title ? to.meta.title + '| ' + config.app_name : config.app_name
+    document.title = to.name ? to.name + ' | ' + config.app_name : config.app_name
     next()
   })
 

@@ -48,7 +48,18 @@ const config = {
       link: 'https://developer.truecaller.com/',
       break_section: true
     }
-  ]
+  ],
+  // app_base_api_url: 'http://localhost:3000',
+  app_base_api_url: 'https://public-api.wordpress.com/rest/v1.1',
+  app_site_id: 107403796,
+  app_posts_per_page: 25,
+  app_max_related_posts: 3,
+  app_max_tags: 10,
+  get categories_url () { return `${this.app_base_api_url}/sites/${this.app_site_id}/categories` },
+  get tags_url () { return `${this.app_base_api_url}/sites/${this.app_site_id}/tags` },
+  get posts_url () { return `${this.app_base_api_url}/sites/${this.app_site_id}/posts/` },
+  get related_posts_url () { return `${this.app_base_api_url}/sites/${this.app_site_id}/posts/$post$/related/` },
+  get post_slug_url () { return `${this.app_base_api_url}/sites/${this.app_site_id}/posts/slug:$post_slug$` }
 }
 
 export default config

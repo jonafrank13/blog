@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh Lpr lFf">
+  <q-layout view="hHh Lpr lFR">
     <q-header elevated>
       <q-toolbar>
         <q-btn
@@ -11,7 +11,7 @@
           class="menu-btn"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title>
+        <q-toolbar-title class="flex justify-center">
           <div class="logo"/>
         </q-toolbar-title>
         <q-btn
@@ -21,12 +21,14 @@
           icon="menu"
           aria-label="Menu"
           @click="rightDrawerOpen = !rightDrawerOpen"
+          :style="{visibility: !hide_navigation ? 'visible' : 'hidden'}"
         />
       </q-toolbar>
-      <q-toolbar inset>
+      <q-toolbar class="flex justify-center">
         <q-breadcrumbs active-color="white">
-          <q-breadcrumbs-el label="Home" to="/" exact active-class="breadcrumb-active" icon="home" />
-          <q-breadcrumbs-el label="Blogs" to="/" exact active-class="breadcrumb-active" icon="amp_stories" />
+          <q-breadcrumbs-el label="Home" to="/" exact active-class="text-bold" icon="home" />
+          <q-breadcrumbs-el label="Blogs" to="/" exact active-class="text-bold" icon="amp_stories" />
+          <q-breadcrumbs-el v-if="hide_navigation" :label="$route.params.slug" :to="$route.params.slug" exact active-class="text-bold" icon="amp_stories" />
         </q-breadcrumbs>
       </q-toolbar>
     </q-header>
@@ -40,7 +42,7 @@
     >
       <q-list>
         <template v-for="link in links">
-          <q-item clickable :key="link.title" :to="link.link" exact active-class="active-menu-link" class="text-white" v-ripple>
+          <q-item clickable tag="a" :key="link.title" :href="link.link" exact active-class="active-menu-link text-bold" class="text-white" :class="link.title === 'Blog' ? 'active-menu-link text-bold' : ''" v-ripple>
             <q-item-section style="font-size: 12px">{{link.title}}</q-item-section>
           </q-item>
           <q-separator :key="link.title+'_sep'" v-if="link.break_section" color="border"  />
@@ -61,35 +63,85 @@
     </q-page-container>
 
     <q-drawer
+      v-if="!hide_navigation"
       v-model="rightDrawerOpen"
       show-if-above
       :width="240"
-      :breakpoint="500"
+      :breakpoint="1200"
       content-class="bg-primary"
       side="right"
     >
-      <q-list>
-      </q-list>
+      <q-scroll-area class="fit">
+        <list-selector v-model="store.category" :items="store.categories" @input="updateCategory" label="Categories" />
+        <list-selector v-model="store.tag" :items="store.tags" @input="updatePosts" label="Tags" />
+      </q-scroll-area>
     </q-drawer>
+
+    <q-footer v-if="!hide_navigation">
+      <q-toolbar class="flex justify-center">
+        <q-pagination
+          v-model="store.page"
+          :max="store.total_pages"
+          input
+          @input="updatePosts"
+          color="secondary"
+          input-class="text-white"
+        >
+        </q-pagination>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
 <script>
 import config from '../config/config'
 import footerLink from '../components/footer-link'
+import listSelector from '../components/list-selector'
+import appService from '../service/app.service'
 
 export default {
   name: 'MainLayout',
-
   components: {
-    footerLink
+    footerLink,
+    listSelector
   },
-
   data () {
     return {
       leftDrawerOpen: false,
+      rightDrawerOpen: false,
       links: config.app_links,
-      rightDrawerOpen: false
+      store: appService.store,
+      hide_navigation: false
+    }
+  },
+  methods: {
+    updatePosts () {
+      this.$nextTick(() => {
+        appService.fetchPosts()
+      })
+    },
+    updateCategory (value) {
+      this.store.category = value
+      this.store.page = 1
+      this.updatePosts()
+    },
+    updateTag (value) {
+      this.store.tag = value
+      this.store.page = 1
+      this.updatePosts()
+    },
+    setNavigation () {
+      this.hide_navigation = (this.$route.name !== 'Blogs')
+    }
+  },
+  mounted () {
+    this.setNavigation()
+    appService.fetchCategories()
+    appService.fetchTags()
+  },
+  watch: {
+    $route: function () {
+      this.setNavigation()
     }
   }
 }
@@ -98,10 +150,9 @@ export default {
 .logo
   background url('../statics/truecaller.png') no-repeat
   background-size contain
+  background-position center
   height 36px
   width 200px
-.breadcrumb-active
-  font-weight bold
 .active-menu-link
   background rgba(140,140,140,0.3)
 </style>

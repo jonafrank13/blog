@@ -14,6 +14,10 @@
   "dependencies": {
     "@quasar/extras": "1.0.0",
     "axios": "0.18.1",
+    "fastify": "2.13.0",
+    "fastify-cors": "3.0.3",
+    "fastify-http-proxy": "3.0.0",
+    "moment": "2.24.0",
     "quasar": "1.0.0"
   },
   "devDependencies": {

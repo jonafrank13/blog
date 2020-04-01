@@ -116,3 +116,9 @@ export default {
   }
 }
 </script>
+<style lang="stylus" scoped>
+  a
+    border-radius 50%
+    &:hover
+      background rgba(125,125,125, 0.5)
+</style>
