@@ -2,19 +2,16 @@
 
 A frontend for a blogging platform
 
-## Install the dependencies
+## Steps to run the application
+
+### Install the dependencies
 ```bash
-npm install
+npm i
 ```
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
+### Start the app in development mode (you will need to install quasar cli npm install -g @quasar/cli)
 ```bash
 quasar dev
-```
-
-### Lint the files
-```bash
-npm run lint
 ```
 
 ### Build the app for production
@@ -22,10 +19,9 @@ npm run lint
 quasar build
 ```
 
-### Run proxy server
+### Run proxy server for get all related links alone, only curl command worked hence running the command in a exec function
 ```bash
 node proxy.js
 ```
 
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+### Host the files in the dist folder as a static server to view the app or you can start it in dev mode using quasar

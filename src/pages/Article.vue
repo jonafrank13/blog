@@ -26,7 +26,7 @@
         <q-card-section class="overflow-hidden text-h6 text-secondary text-bold">Related Posts</q-card-section>
         <q-card-section class="row q-gutter-md justify-evenly">
           <blog v-for="post in related_posts" :key="post.ID" :post="post" />
-          <h3 class="text-white text-center full-width" v-if="related_posts.length === 0">No Related Posts Found</h3>
+          <h5 class="text-white text-center full-width" v-if="related_posts.length === 0">No Related Posts Found</h5>
         </q-card-section>
     </q-card>
     <div>
@@ -55,17 +55,30 @@ export default {
       this.$q.loading.show()
       appService.getPost(this.$route.params.slug).then((response) => {
         this.post = response.data
-        appService.getRelatedPosts(this.post.ID).then((resp) => {
-          if (resp.data.hits) {
-            resp.data.hits.forEach((hit) => {
-              appService.getPostById(hit.fields.post_id).then((res) => {
-                this.related_posts.push(res.data)
-              })
-            })
-          }
-        }).finally(() => {
-          this.$q.loading.hide()
+        this.getRelatedPosts()
+      })
+    },
+    getRelatedPosts () {
+      appService.getRelatedPosts(this.post.ID).then((resp) => {
+        if (resp.data.hits) {
+          resp.data.hits.forEach((hit) => {
+            this.getPostById(hit.fields.post_id)
+          })
+        }
+      }).catch((error) => {
+        console.error(error)
+        this.$q.notify({
+          type: 'negative',
+          caption: 'API error',
+          message: 'Check if you ran the proxy server'
         })
+      }).finally(() => {
+        this.$q.loading.hide()
+      })
+    },
+    getPostById (postId) {
+      appService.getPostById(postId).then((res) => {
+        this.related_posts.push(res.data)
       })
     }
   },

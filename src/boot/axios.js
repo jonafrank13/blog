@@ -4,14 +4,14 @@ import { Notify } from 'quasar'
 
 function responseErrorHandler (error) {
   // Common error handler
-  if (error.response) {
+  if (error.response || error) {
     Notify.create({
       type: 'negative',
       caption: 'API error',
-      message: error.response.data.message
+      message: error.response ? error.response.data.message : 'Could not reach the servers'
     })
     console.error(error.response)
-    // return Promise.reject(error)
+    return Promise.reject(error)
   }
 }
 
