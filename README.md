@@ -26,7 +26,6 @@ quasar build
 ```bash
 node proxy.js
 ```
-Note: update config.js to use app_base_url as http://localhost:3000 if you are using the proxy
 
 ### Customize the configuration
 See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).

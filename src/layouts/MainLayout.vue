@@ -8,7 +8,7 @@
           round
           icon="menu"
           aria-label="Menu"
-          class="menu-btn"
+          :class="$q.screen.lt.md ? '' : 'hide-visible'"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
         <q-toolbar-title class="flex justify-center">
@@ -27,7 +27,6 @@
       <q-toolbar class="flex justify-center">
         <q-breadcrumbs active-color="white">
           <q-breadcrumbs-el label="Home" to="/" exact active-class="text-bold" icon="home" />
-          <q-breadcrumbs-el label="Blogs" to="/" exact active-class="text-bold" icon="amp_stories" />
           <q-breadcrumbs-el v-if="hide_navigation" :label="$route.params.slug" :to="$route.params.slug" exact active-class="text-bold" icon="amp_stories" />
         </q-breadcrumbs>
       </q-toolbar>

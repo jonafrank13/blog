@@ -37,11 +37,11 @@ const appService = {
     })
   },
   getRelatedPosts (id) {
-    const url = config.related_posts_url.replace('$post$', id)
     const params = {
-      size: config.app_max_related_posts
+      site: config.app_site_id,
+      post: id
     }
-    return axios.post(url, params)
+    return axios.get(config.related_posts_url, { params })
   },
   getCategories () {
     return axios.get(config.categories_url)
@@ -74,6 +74,10 @@ const appService = {
   },
   getPost (slug) {
     const url = config.post_slug_url.replace('$post_slug$', slug)
+    return axios.get(url)
+  },
+  getPostById (id) {
+    const url = config.post_id_url.replace('$post_id$', id)
     return axios.get(url)
   }
 }

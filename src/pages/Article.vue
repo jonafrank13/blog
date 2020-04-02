@@ -23,6 +23,11 @@
         </q-card-section>
         <q-separator dark inset />
         <q-card-section class="text-white overflow-hidden content-box" v-html="post.content"></q-card-section>
+        <q-card-section class="overflow-hidden text-h6 text-secondary text-bold">Related Posts</q-card-section>
+        <q-card-section class="row q-gutter-md justify-evenly">
+          <blog v-for="post in related_posts" :key="post.ID" :post="post" />
+          <h3 class="text-white text-center full-width" v-if="related_posts.length === 0">No Related Posts Found</h3>
+        </q-card-section>
     </q-card>
     <div>
     </div>
@@ -31,29 +36,51 @@
 <script>
 import appService from '../service/app.service'
 import moment from 'moment'
+import blog from '../components/blog'
 
 export default {
-  name: 'Blogs',
+  name: 'Article',
+  components: {
+    blog
+  },
   data () {
     return {
-      post: {}
+      post: {},
+      related_posts: []
+    }
+  },
+  methods: {
+    refresh () {
+      this.related_posts.splice(0, this.related_posts.length)
+      this.$q.loading.show()
+      appService.getPost(this.$route.params.slug).then((response) => {
+        this.post = response.data
+        appService.getRelatedPosts(this.post.ID).then((resp) => {
+          if (resp.data.hits) {
+            resp.data.hits.forEach((hit) => {
+              appService.getPostById(hit.fields.post_id).then((res) => {
+                this.related_posts.push(res.data)
+              })
+            })
+          }
+        }).finally(() => {
+          this.$q.loading.hide()
+        })
+      })
     }
   },
   mounted () {
-    this.$q.loading.show()
-    appService.getPost(this.$route.params.slug).then((response) => {
-      this.post = response.data
-      appService.getRelatedPosts(this.post.ID).then((resp) => {
-        console.log(resp)
-      }).finally(() => {
-        this.$q.loading.hide()
-      })
-    })
+    this.refresh()
   },
   filters: {
     date_format: function (date) {
       if (!date) return ''
       return moment(date).fromNow()
+    }
+  },
+  watch: {
+    $route () {
+      this.refresh()
     }
   }
 }

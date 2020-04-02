@@ -1,17 +1,23 @@
-const Fastify = require('fastify')
-const server = Fastify()
+const express = require('express')
+const app = express()
+const port = 3000
+const exec = require('child_process').exec
 
-server.register(require('fastify-http-proxy'), {
-  upstream: 'https://public-api.wordpress.com/rest/v1.1/',
-  prefix: '/'
+app.get('/', (req, res) => {
+  const url = `https://public-api.wordpress.com/rest/v1/sites/${req.query.site}/posts/${req.query.post}/related`
+  const command = 'curl --data-urlencode "size=3" ' + url
+
+  exec(command, function (error, out) {
+    console.log('out: ', JSON.parse(out))
+
+    if (error !== null) {
+      console.log('exec error: ' + error)
+      res.status(500).send('error')
+    }
+
+    res.header('Access-Control-Allow-Origin', '*')
+    res.send(JSON.parse(out))
+  })
 })
 
-server.register(require('fastify-cors'), { origin: '*' })
-
-server.listen(3000, '0.0.0.0', (err, address) => {
-  if (err) {
-    server.log.error(err)
-    process.exit(1)
-  }
-  console.log(`server listening on ${address}`)
-})
+app.listen(port, () => console.log(`listening at http://localhost:${port}`))
