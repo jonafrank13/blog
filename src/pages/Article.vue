@@ -69,8 +69,7 @@ export default {
         console.error(error)
         this.$q.notify({
           type: 'negative',
-          caption: 'API error',
-          message: 'Check if you ran the proxy server'
+          caption: 'Related posts API disabled by site owner'
         })
       }).finally(() => {
         this.$q.loading.hide()

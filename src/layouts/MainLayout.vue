@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh Lpr lFR">
+  <q-layout view="hHh Lpr lFR" class="bg-background">
     <q-header elevated>
       <q-toolbar>
         <q-btn
@@ -57,7 +57,7 @@
         leave-active-class="animated fadeOut"
         mode="out-in"
       >
-        <router-view />
+        <router-view v-if="config.app_site_id" />
       </transition>
     </q-page-container>
 
@@ -110,7 +110,8 @@ export default {
       rightDrawerOpen: false,
       links: config.app_links,
       store: appService.store,
-      hide_navigation: false
+      hide_navigation: false,
+      config: config
     }
   },
   methods: {
@@ -131,12 +132,32 @@ export default {
     },
     setNavigation () {
       this.hide_navigation = (this.$route.name !== 'Blogs')
+    },
+    startup () {
+      this.setNavigation()
+      appService.fetchCategories()
+      appService.fetchTags()
     }
   },
   mounted () {
-    this.setNavigation()
-    appService.fetchCategories()
-    appService.fetchTags()
+    if (!config.app_site_id) {
+      this.$q.dialog({
+        title: 'Site ID Required',
+        message: 'What is the site ID of the wordpress blog you want to view? (e.g: 3584907)',
+        dark: true,
+        prompt: {
+          model: '3584907',
+          type: 'number',
+          outlined: true,
+          isValid: val => Boolean(val)
+        },
+        cancel: false,
+        persistent: true
+      }).onOk(data => {
+        this.config.app_site_id = data
+        this.startup()
+      })
+    }
   },
   watch: {
     $route: function () {
@@ -147,10 +168,10 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .logo
-  background url('../statics/truecaller.png') no-repeat
+  background url('../statics/wordpress.png') no-repeat
   background-size contain
   background-position center
-  height 36px
+  height 50px
   width 200px
 .active-menu-link
   background rgba(140,140,140,0.3)
